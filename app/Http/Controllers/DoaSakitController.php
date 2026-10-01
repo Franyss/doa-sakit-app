@@ -13,6 +13,12 @@ class DoaSakitController extends Controller
         return view('doa_sakit.index', compact('doaList'));
     }
 
+    public function show($id)
+    {
+        $doaSakit = DoaSakit::findOrFail($id);
+        return view('doa_sakit.show', compact('doaSakit'));
+    }
+
     public function create()
     {
         return view('doa_sakit.form');

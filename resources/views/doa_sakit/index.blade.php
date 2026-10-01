@@ -9,44 +9,48 @@
 <body class="bg-light">
 
 <div class="container my-5">
+    <!-- Header Page -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Daftar Permohonan Doa Sakit</h2>
+        <h2 class="fw-bold">Daftar Permohonan Doa Sakit</h2>
         <a href="{{ route('doa-sakit.create') }}" class="btn btn-primary">+ Tambah Permohonan</a>
     </div>
 
+    <!-- Alert Sukses -->
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
-    <div class="card shadow-sm">
+    <!-- Card Tabel Data -->
+    <div class="card shadow-sm border-0 rounded-3 mb-4 overflow-hidden">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover table-striped mb-0">
+                <table class="table table-hover table-striped mb-0 align-middle">
                     <thead class="table-dark">
                         <tr>
-                            <th>No</th>
-                            <th>Nama</th>
-                            <th>Gender</th>
-                            <th>Penyakit</th>
-                            <th>Waktu Doa</th>
-                            <th>Alamat</th>
-                            <th>No. HP</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
+                            <th class="py-3 ps-3">No</th>
+                            <th class="py-3">Nama</th>
+                            <th class="py-3">Gender</th>
+                            <th class="py-3">Penyakit</th>
+                            <th class="py-3">Waktu Doa</th>
+                            <th class="py-3">Alamat</th>
+                            <th class="py-3">No. HP</th>
+                            <th class="py-3">Status</th>
+                            <th class="py-3 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($doaList as $index => $doa)
                             <tr>
-                                <td>{{ $index + 1 }}</td>
+                                <td class="ps-3 fw-bold text-secondary">{{ $index + 1 }}</td>
                                 <td><strong>{{ $doa->nama }}</strong></td>
                                 <td>{{ $doa->gender }}</td>
                                 <td>{{ $doa->jenis_penyakit }}</td>
                                 <td>
                                     {{ \Carbon\Carbon::parse($doa->tanggal_doa)->format('d-m-Y') }}
+                                    <br>
                                     <small class="text-muted">({{ \Carbon\Carbon::parse($doa->jam_doa)->format('H:i') }})</small>
                                 </td>
                                 <td>{{ $doa->alamat }}</td>
@@ -59,18 +63,17 @@
                                         {{ $doa->status }}
                                     </span>
                                 </td>
-                                <td>
-                                    <a href="{{ route('doa-sakit.edit', $doa->id) }}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-danger"
-                                            onclick="confirmDelete('{{ route('doa-sakit.destroy', $doa->id) }}', '{{ $doa->nama }}')">
-                                        Hapus
-                                    </button>
+                                <td class="text-center">
+                                    <a href="{{ route('doa-sakit.show', $doa->id) }}" class="btn btn-sm btn-info text-white rounded-2 px-3 fw-medium">
+                                        🔍 Detail
+                                    </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center py-4 text-muted">Belum ada data permohonan.</td>
+                                <td colspan="9" class="text-center py-5 text-muted">
+                                    <p class="mb-0 fs-6">Belum ada data permohonan doa.</p>
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -78,40 +81,37 @@
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal Konfirmasi Hapus -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Konfirmasi Hapus Data</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center py-4">
-                <p class="fs-5 mb-1">Apakah Anda yakin ingin menghapus data permohonan doa untuk:</p>
-                <h4 class="fw-bold text-danger" id="deleteNamaUser">-</h4>
-                <p class="text-muted small mt-2 mb-0">Tindakan ini tidak dapat dibatalkan!</p>
-            </div>
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <form id="deleteForm" method="POST" action="">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Ya, Hapus Data</button>
-                </form>
+    <!-- Card Minimap Lokasi Yayasan / Vittindo CCTV Palembang -->
+    <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2 px-3">
+            <span class="fw-bold">📍 Lokasi Yayasan (Vittindo CCTV Palembang)</span>
+            <a href="https://maps.app.goo.gl/durkKX6pCJ4xGrGX7" target="_blank" class="btn btn-sm btn-outline-light rounded-2">
+                Buka di Google Maps ↗
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div class="ratio ratio-21x9" style="max-height: 250px;">
+                <!-- Peta dengan Titik Koordinat Presisi & Zoom Level 17 -->
+                <iframe
+                    src="https://maps.google.com/maps?q=-2.9467332,104.7524668+(Vittindo+CCTV+Palembang)&t=&z=17&ie=UTF8&iwloc=B&output=embed"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
             </div>
         </div>
+        <div class="card-footer bg-white text-muted small py-2 px-3 border-top">
+            <strong>Link Lokasi:</strong>
+            <a href="https://maps.app.goo.gl/durkKX6pCJ4xGrGX7" target="_blank" class="text-primary text-decoration-none ms-1">
+                https://maps.app.goo.gl/durkKX6pCJ4xGrGX7
+            </a>
+        </div>
     </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    function confirmDelete(actionUrl, nama) {
-        document.getElementById('deleteForm').action = actionUrl;
-        document.getElementById('deleteNamaUser').textContent = nama;
-        new bootstrap.Modal(document.getElementById('deleteModal')).show();
-    }
-</script>
 </body>
 </html>

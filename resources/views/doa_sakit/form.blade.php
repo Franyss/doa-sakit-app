@@ -10,16 +10,18 @@
 
 <div class="container" style="max-width: 650px;">
 
-    <!-- Tampilkan Notifikasi Error Validasi Server -->
+    <!-- Tampilkan Notifikasi Error Validasi Server (Menggunakan PHP Native) -->
     @if ($errors->any())
         <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-3" role="alert">
             <strong class="d-block mb-1">Gagal menyimpan data:</strong>
             <ul class="mb-0 ps-3">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
+                @php
+                    foreach ($errors->all() as$error) {
+                        echo '<li>' . e($error) . '</li>';
+                    }
+                @endphp
             </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
@@ -77,15 +79,35 @@
                     </div>
                 </div>
 
-                <!-- Alamat & Nomor HP -->
+                <!-- Alamat Domisili & Nomor HP -->
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
-                        <label class="form-label text-secondary small fw-bold">Alamat</label>
-                        <input type="text" name="alamat" class="form-control rounded-3" value="{{ old('alamat', $doaSakit->alamat ?? '') }}" placeholder="Masukkan alamat domisili" required maxlength="50">
+                        <label class="form-label text-secondary small fw-bold">Alamat Domisili</label>
+                        <input type="text"
+                               name="alamat"
+                               id="alamat"
+                               class="form-control rounded-3"
+                               value="{{ old('alamat', $doaSakit->alamat ?? '') }}"
+                               placeholder="Contoh: Jl. Sudirman No. 12, Palembang"
+                               required
+                               maxlength="225"
+                               oninput="updateMapPreview()">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label text-secondary small fw-bold">Nomor HP / WhatsApp</label>
                         <input type="text" name="no_hp" class="form-control rounded-3" value="{{ old('no_hp', $doaSakit->no_hp ?? '') }}" placeholder="08xxxxxxxxxx" maxlength="50">
+                    </div>
+                </div>
+
+                <!-- Live Preview Minimap berdasarkan Alamat -->
+                <div class="card border-0 shadow-sm mb-3 rounded-3 overflow-hidden d-none" id="mapPreviewCard">
+                    <div class="card-header bg-dark text-white py-2 px-3 small fw-bold">
+                        📍 Live Preview Lokasi Pemohon
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="ratio ratio-21x9" style="max-height: 200px;">
+                            <iframe id="mapFrame" src="" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                        </div>
                     </div>
                 </div>
 
@@ -120,5 +142,26 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function updateMapPreview() {
+        const alamatInput = document.getElementById('alamat');
+        const mapCard = document.getElementById('mapPreviewCard');
+        const mapFrame = document.getElementById('mapFrame');
+
+        const alamatVal = alamatInput ? alamatInput.value.trim() : '';
+
+        if (alamatVal !== "") {
+            mapFrame.src = `https://maps.google.com/maps?q=${encodeURIComponent(alamatVal)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+            mapCard.classList.remove('d-none');
+        } else {
+            mapCard.classList.add('d-none');
+            mapFrame.src = "";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        updateMapPreview();
+    });
+</script>
 </body>
 </html>
